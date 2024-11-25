@@ -1,15 +1,15 @@
-import { config } from "dotenv"
-const dotenv = config()
+import dotenv from "dotenv";
+dotenv.config();
 
 import express from "express"
 import connectDB from "./src/db/index.js"
 import todosRoutes from "./src/routes/todos.routes.js"
 
 const app = express()
-const port = 3000
+app.use(express.json())
 
 app.get('/', (req, res) => {
-  res.send('Hello Faizan!')
+  res.send('Hello faizan!')
 })
 
 // middlewire
