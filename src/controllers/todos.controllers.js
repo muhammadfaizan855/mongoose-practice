@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 import Todos from "../models/todos.models.js";
 
 // add Todo
+
 const addTodo = (req , res) => {
    const { title, description } = req.body;
 
    if(!title || !description){
-   res.send(400).json({
+   res.status(400).json({
     message: "Title or description is required"
    })
    return
@@ -17,7 +18,7 @@ const todo = Todos.create({
     description,
 })
 
-res.send(201).json({
+res.status(201).json({
   message: "user added successfully",
   todo   
 })
@@ -32,17 +33,96 @@ res.send(201).json({
 
 const getAllTodo = async (req , res) => {
    const todos = await Todos.find({})
-   res.send(200).json({
+   res.status(200).json({
       todos: todos,
    })
 }
 
 
+
+
 // get Single Todo
 
 
+const getSingleTodo = (req , res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+   return res.status(400).json({ error: "Not valid Id" });
+ }
+
+ const todo = Todos.findById()
+ if(!todo){
+   res.status(400).json({
+      message: "No Todo Found",
+   })
+   return
+ }
+
+ res.status(200).json(todo)
+}
+
+
 // Delete Todo
+
+const deleteTodo = async (req , res) => {
+   const { id } = req.params;
+ 
+   if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Not valid Id" });
+  }
+
+  const todo = await Todos.findOneAndDelete({ _id: id })
+
+  if(!todo){
+   return res.status(404).json({
+      error: "No Todo Found!"
+   })
+  }
+
+  res.status(200).json({
+   message: "Todo Deleted SuccessFully",
+   todo,
+  })
+}
+
+
+
+
 // Edit Todo
 
+
+
+const editTodo = async (req ,res) => {
+  const { id } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+   return res.status(400).json({ error : "Not Valid id"})
+  }
  
-export { addTodo, getAllTodo }
+  const todo = await Todos.findOneAndUpdate({ _id: id},
+   {
+      ...req.body,
+   }
+  );
+
+  if(!todo){
+   return res.status(400).json({
+      error:  "No Todo Found"
+   })
+  }
+
+  res.status(todo)
+}
+
+
+
+
+
+
+
+
+
+
+ 
+export { addTodo, getAllTodo , getSingleTodo , deleteTodo, editTodo }
